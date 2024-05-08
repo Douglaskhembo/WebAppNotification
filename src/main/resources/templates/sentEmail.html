@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Sent Emails</title>
+  <style>
+    /* Style for the subscription page container */
+    #inbox-popup {
+      position: fixed;
+      top: 80px; /* Adjust based on top_nav height */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Center horizontally */
+      width: 90%; /* Adjust width to fit the area */
+      max-width: 400px; /* Maximum width */
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+    }
+
+    labels {
+      color: #800000;
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+<div id="inbox-popup">
+  <h2>Sent Emails</h2>
+  <ul>
+    <!-- Iterate over each sent email using Thymeleaf -->
+    <li id="labels" th:each="sentEmail : ${sentEmails}">
+      <!-- Display email subject -->
+      <strong th:text="${sentEmail.subject}"></strong><br>
+      <!-- Display email sent timestamp -->
+      <span th:text="${sentEmail.sentAt}"></span><br>
+      <!-- Display email body -->
+      <pre th:text="${sentEmail.body}"></pre>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

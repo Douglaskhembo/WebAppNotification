@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>New Updates Available</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+
+    h1 {
+      color: maroon;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent;
+      border: none;
+      color: maroon;
+      cursor: pointer;
+      font-size: 20px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    .close-button:hover {
+      background-color: rgba(128, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+<h1>Updates Manager</h1>
+<p>Dear [[${username}]],</p>
+<!--<p>Dear Pavan,</p>-->
+<p>New updates are available:</p>
+<ul>
+<!--    <li th:each="update : ${updates}" th:text="${update.description}"></li>-->
+  <li>X</li>
+  <li>WhatsApp</li>
+  <li>Instagram</li>
+  <li>LinkedIn</li>
+  <li>Microsoft Teams</li>
+</ul>
+<button class="close-button" onclick="closePopup()">Close</button>
+</body>
+</html>
+

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription Page</title>
+    <style>
+        /* Style for the subscription page container */
+        #subscriptionContainer {
+            position: fixed;
+            top: 80px; /* Adjust based on top_nav height */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center horizontally */
+            width: 90%; /* Adjust width to fit the area */
+            max-width: 400px; /* Maximum width */
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        /* Additional styles for the subscription page content */
+        #subscriptionForm {
+            margin-top: 20px;
+        }
+
+        label {
+            color: #800000;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="submit"], .close-button {
+            background-color: #800000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #4b0082;
+        }
+
+        .close-button:hover {
+            background-color: #4b0082;
+        }
+
+        h2 {
+            color: #800000;
+            text-align: center;
+        }
+
+        /* Additional styles for the subscription page content */
+        #subscriptionForm {
+            margin: 0 auto; /* Center horizontally */
+            max-width: 300px; /* Set max width */
+            padding: 20px; /* Add padding */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="subscriptionContainer">
+    <h2>Choose Subscription</h2>
+
+    <form id="subscriptionForm" action="/subscription" method="post">
+        <label for="subscriptionType">Select Subscription Type:</label>
+        <select id="subscriptionType" name="subscriptionType">
+            <option value="">Select</option>
+            <option value="X">X</option>
+            <option value="WHATSAPP">WhatsApp</option>
+            <option value="INSTAGRAM">Instagram</option>
+            <option value="LINKEDIN">LinkedIn</option>
+            <option value="MICROSOFT_TEAMS">Microsoft Teams</option>
+        </select>
+        <br>
+        <input type="submit" value="Subscribe">
+        <button type="button" class="close-button" onclick="closeSubscriptionContainer()">Cancel</button>
+    </form>
+    <div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
+    <div th:if="${successMessage}" style="color: green;" th:text="${successMessage}"></div>
+</div>
+
+<script>
+    // Function to close subscription container
+    function closeSubscriptionContainer() {
+        // Close the subscription container
+        document.getElementById('subscriptionContainer').style.display = 'none';
+    }
+
+</script>
+</body>
+</html>

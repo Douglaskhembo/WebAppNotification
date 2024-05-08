@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Login</title>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f2f2f2;
+    }
+    .container {
+      width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo img {
+      width: 150px;
+      height: auto;
+    }
+    label {
+      color: #800000;
+      display: block;
+      margin-bottom: 5px;
+    }
+    button {
+      background-color: #800000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #4b0082;
+    }
+    h2 {
+      color: #800000;
+    }
+    .register-link {
+      color: #800000;
+      text-decoration: none;
+      margin-top: 10px;
+      display: inline-block;
+    }
+    .register-link:hover {
+      color: #4b0082;
+    }
+  </style>
+</head>
+<body>
+<form action="/login" method="post" class="container">
+  <div class="logo">
+    <img src="/images/logo.jpg" alt="Logo">
+  </div>
+  <label for="username">Username:</label>
+  <input type="text" placeholder="username" id="username" name="username" required><br><br>
+  <label for="password">Password:</label>
+  <input type="password" placeholder="password" id="password" name="password" required><br><br>
+  <button type="submit">Login</button>
+  <div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
+  <p> New to the site? <a href="/register" class="register-link">Create Account</a></p>
+</form>
+</body>
+</html>

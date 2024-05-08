@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Profile</title>
+
+    <style>
+        /* Style for the Edit page  */
+        #EditProfile {
+            position: fixed;
+            top: 80px; /* Adjust based on top_nav height */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center horizontally */
+            width: 90%; /* Adjust width to fit the area */
+            max-width: 400px; /* Maximum width */
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        #EditForm{
+            max-width: 300px;
+            padding: 20px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        #EditForm {
+            margin-top: 20px;
+        }
+
+        label {
+            color: #800000;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="submit"], .close-button {
+            background-color: #800000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        input[type="submit"]:hover {
+            background-color: #4b0082;
+        }
+        .close-button:hover{
+            background-color: #4b0082;
+        }
+        h2 {
+            color: #800000;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id = EditProfile>
+    <h2>Edit Profile</h2>
+    <form id="EditForm" onsubmit="return validateEmailAndSubmit()" action="/edit-profile" method="post" th:object="${user}">
+        <div>
+            <label>Username:</label>
+            <input type="text" th:field="*{username}" required />
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" id="emailPopup" th:field="*{email}" required />
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" th:field="*{password}" required />
+        </div>
+        <br>
+        <input type="submit" value="Save">
+        <button type="button" class="close-button" onclick="closeEditForm()">Cancel</button>
+<!--        <div>-->
+<!--            <button type="submit">Save</button>-->
+<!--        </div>-->
+    </form>
+</div>
+</body>
+</html>
+<script>
+    // Function to close edit form
+    function closeEditForm() {
+
+        console.log(document.getElementById('EditProfile').style.display = 'none');
+    }
+
+    function validateEmailAndSubmit() {
+        var email = document.getElementById('emailPopup').value;
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+        return true;
+    }
+</script>

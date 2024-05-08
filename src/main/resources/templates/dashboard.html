@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 0;
+      position: relative;
+    }
+
+    h1 {
+      color: white;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+      align-content: center;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .sidebar {
+      background-color: maroon;
+      color: white;
+      width: 230px;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100vh;
+    }
+
+    .top_nav {
+      background-color: maroon;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      left: 200px; /* Adjust based on sidebar width */
+    }
+
+    .inbox-popup {
+      position: fixed;
+      top: 60px; /* Adjust based on top_nav height */
+      right: 10px;
+      width: 300px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      padding: 20px;
+      display: none;
+    }
+
+    .email-link,
+    .logout-button {
+      color: white;
+      margin: 0 10px;
+    }
+
+    .popup, .DeleteContainer {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      width: 300px;
+      max-width: 90%;
+      text-align: left;
+      overflow-y: auto;
+      max-height: 80%;
+    }
+
+    .close-button {
+      background-color: transparent;
+      border: none;
+      color: maroon;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px 10px;
+      margin-top: 10px;
+    }
+    label {
+      color: #800000;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .close-button {
+      background-color: transparent;
+      border: none;
+      color: maroon;
+      cursor: pointer;
+      font-size: 16px;
+      /*padding: 5px 10px;*/
+      /*margin-top: 10px;*/
+    }
+    .DeleteContainer {
+      text-align: center;
+    }
+    button {
+      background-color: #800000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #4b0082;
+    }
+    h2 {
+      color: #800000;
+    }
+
+    /* Added CSS for profile picture */
+    .profile_pic img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+    /* Style for the subscription page container */
+    #subscriptionContainer {
+      position: absolute;
+      top: 100px; /* Adjust based on top_nav height */
+      left: 240px; /* Adjust based on sidebar width */
+      width: calc(100% - 260px); /* Adjust width to fit the area */
+      max-width: 80%; /* Maximum width */
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 99;
+    }
+    /* Additional styles for the subscription page content */
+    #subscriptionForm {
+      margin-top: 20px;
+    }
+    label {
+      color: #800000;
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="submit"] {
+      background-color: #800000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    input[type="submit"]:hover {
+      background-color: #4b0082;
+    }
+    h2 {
+      color: #800000;
+    }
+    .sidebar-item {
+      list-style-type: none; /* Remove dots */
+      cursor: pointer;
+      position: relative; /* Add position relative */
+      padding-right: 30px; /* Add space for pointer */
+    }
+
+    .sidebar-item::after {
+      content: ""; /* Add content for pseudo-element */
+      position: absolute; /* Position the pointer absolutely */
+      top: 50%; /* Align with the middle of the item */
+      right: 10px; /* Move to the right edge of the item */
+      transform: translateY(-50%); /* Center vertically */
+      width: 0; /* Set width to create the pointer */
+      height: 0; /* Set height to create the pointer */
+      border-left: 5px solid transparent; /* Create left side of pointer */
+      border-right: 5px solid transparent; /* Create right side of pointer */
+      border-top: 5px solid white; /* Create bottom side of pointer */
+    }
+
+    .nav.child_menu {
+      list-style-type: none; /* Remove dots */
+      cursor: pointer;
+      display: none; /* Hide initially */
+      position: absolute; /* Position child menu absolutely */
+      top: 0; /* Align with parent */
+      left: 10%; /* Position to the right of parent */
+      z-index: 999; /* Ensure it's above other content */
+      background-color: maroon; /* Match sidebar background */
+      padding: 0; /* Remove default padding */
+      margin: 20px; /* Remove default margin */
+    }
+
+    .nav.child_menu li {
+      display: flex; /* Display child menu items inline */
+      white-space: nowrap; /* Prevent line breaks */
+      margin-right: 0px; /* Add margin between items */
+    }
+  </style>
+</head>
+<body>
+<div class="top_nav">
+  <!-- Top navigation content -->
+  <h1>Notification Manager for Windows Applications</h1>
+  <a href="/logout" class="logout-button">Logout</a>
+</div>
+<div class="container">
+  <div class="sidebar">
+    <div class="clearfix"></div>
+    <!-- menu profile quick info -->
+    <div class="profile clearfix">
+      <div class="profile_pic">
+        <img src="images/logo.jpg" alt="..." class="img-circle profile_img">
+      </div>
+      <div class="profile_info">
+        <span>Welcome,</span>
+        <h2>John Doe</h2>
+      </div>
+    </div>
+    <!-- /menu profile quick info -->
+    <br />
+    <!-- sidebar menu -->
+    <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+      <div class="menu_section">
+        <h3>General</h3>
+        <ul class="nav side-menu">
+          <li class="sidebar-item" onclick="toggleSubMenu('home', this)"><span>Notifications</span>
+            <ul id="home" class="nav child_menu">
+              <li><a href="sentEmail.html" onclick="loadSentEmailPage()">Inbox</a></li>
+            </ul>
+          </li>
+          <li class="sidebar-item" onclick="toggleSubMenu('forms', this)"><span>Subscriptions</span>
+            <ul id="forms" class="nav child_menu">
+              <li><a href="#" onclick="loadSubscriptionPage()">Add Subscriptions</a></li> <!-- Updated anchor tag -->
+              <li><a href="#" onclick="loadUnsubscribePage()">View Subscriptions</a></li>
+            </ul>
+          </li>
+          <li class="sidebar-item" onclick="toggleSubMenu('ui-elements', this)"><span>Profile</span>
+            <ul id="ui-elements" class="nav child_menu">
+              <li><a href="#" onclick="loadEditProfile()">Edit profile</a></li>
+              <li><a href="#" onclick="loadDeleteUserPage()">Delete Account</a></li> <!-- Updated anchor tag -->
+<!--              <li><a href="calendar.html">Calendar</a></li>-->
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- /sidebar menu -->
+  </div>
+</div>
+<!-- Placeholder for subscription page content -->
+<div id="subscriptionPlaceholder"></div>
+<!-- Placeholder for unsubscribe subscription page content -->
+<div id="unsubscribeSubscriptionPlaceholder"></div>
+<!-- Placeholder for edit profile page content -->
+<div id="editProfilePlaceholder"></div>
+<!-- Placeholder for delete user page content -->
+<div id="deleteUserPlaceholder"></div>
+
+<script>
+  // Function to toggle submenu
+  function toggleSubMenu(id, element) {
+    var submenu = document.getElementById(id);
+    if (submenu.style.display === 'block') {
+      submenu.style.display = 'none';
+      element.style.marginBottom = '';
+    } else {
+      submenu.style.display = 'block';
+      element.style.marginBottom = submenu.offsetHeight + 'px';
+    }
+  }
+  // Function to close subscription container
+  function closeSubscriptionContainer() {
+    var subscriptionContainer = document.getElementById('subscriptionContainer');
+    if (subscriptionContainer) {
+      subscriptionContainer.style.display = 'none';
+    }
+  }
+
+  // Function to close Delete Account container
+  function closeDeleteContainer() {
+    var DeleteContainer = document.getElementById('DeleteContainer');
+    if (DeleteContainer) {
+      DeleteContainer.style.display = 'none';
+    }
+  }
+
+  // Function to close subscription container
+  function closeUnsubscribePage() {
+    var unsubscribe = document.getElementById('unsubscribe');
+    if (unsubscribe) {
+      unsubscribe.style.display = 'none';
+    }
+  }
+  // Function to close edit form
+  function closeEditForm() {
+    var EditProfile = document.getElementById('EditProfile');
+    if (EditProfile) {
+      EditProfile.style.display = 'none';
+    }
+  }
+
+  // Function to toggle submenu
+  function toggleSubMenu(id, element) {
+    var submenu = document.getElementById(id);
+    if (submenu.style.display === 'block') {
+      submenu.style.display = 'none';
+      element.style.marginBottom = '';
+    } else {
+      submenu.style.display = 'block';
+      element.style.marginBottom = submenu.offsetHeight + 'px';
+    }
+  }
+
+  // Function to load subscription page
+  function loadSubscriptionPage() {
+    var subscriptionPlaceholder = document.getElementById('subscriptionPlaceholder');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          subscriptionPlaceholder.innerHTML = xhr.responseText;
+        } else {
+          console.error('Error fetching subscription page:', xhr.statusText);
+        }
+      }
+    };
+    xhr.open('GET', 'subscription.html', true);
+    xhr.send();
+  }
+
+  function loadDeleteUserPage() {
+    var deleteUserPlaceholder = document.getElementById('deleteUserPlaceholder');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          deleteUserPlaceholder.innerHTML = xhr.responseText;
+        } else {
+          console.error('Error fetching delete user page:', xhr.statusText);
+        }
+      }
+    };
+    xhr.open('GET', '/delete_user', true);
+    xhr.send();
+  }
+
+  // Function to load subscription page
+  function loadUnsubscribePage() {
+    var unsubscribeSubscriptionPlaceholder = document.getElementById('unsubscribeSubscriptionPlaceholder');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          unsubscribeSubscriptionPlaceholder.innerHTML = xhr.responseText;
+        } else {
+          console.error('Error fetching unsubscribe subscription page:', xhr.statusText);
+        }
+      }
+    };
+    xhr.open('GET', '/unsubscribe', true);
+    xhr.send();
+  }
+
+  // Function to load subscription page
+  function loadEditProfile() {
+    var editProfilePlaceholder = document.getElementById('editProfilePlaceholder');
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          editProfilePlaceholder.innerHTML = xhr.responseText;
+        } else {
+          console.error('Error fetching edit profile page:', xhr.statusText);
+        }
+      }
+    };
+    xhr.open('GET', '/edit-profile', true);
+    xhr.send();
+  }
+
+</script>
+</body>
+</html>
