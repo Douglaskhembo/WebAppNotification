@@ -2,24 +2,20 @@ package AppWeb.AppWeb.model;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
 
 public class SubscribeRequest {
 
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    private SubscriptionType subscriptionType;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private Application application;
 
     // Constructors
     public SubscribeRequest() {
     }
 
-    public SubscribeRequest(Long userId, SubscriptionType subscriptionType) {
-        this.userId = userId;
-        this.subscriptionType = subscriptionType;
-    }
-
-    // Getters and setters
     public Long getUserId() {
         return userId;
     }
@@ -28,11 +24,11 @@ public class SubscribeRequest {
         this.userId = userId;
     }
 
-    public SubscriptionType getSubscriptionType() {
-        return subscriptionType;
-    }
-
-    public void setSubscriptionType(SubscriptionType subscriptionType) {
-        this.subscriptionType = subscriptionType;
-    }
+//    public Application getApplication() {
+//        return application;
+//    }
+//
+//    public void setApplication(Application application) {
+//        this.application = application;
+//    }
 }

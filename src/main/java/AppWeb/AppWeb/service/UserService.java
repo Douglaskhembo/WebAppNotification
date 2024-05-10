@@ -1,5 +1,6 @@
 package AppWeb.AppWeb.service;
 
+import AppWeb.AppWeb.exceptionHandler.UsernameNotFoundException;
 import AppWeb.AppWeb.model.User;
 import AppWeb.AppWeb.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -17,8 +18,10 @@ public class UserService {
     private UserRepository userRepository;
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        return userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
+
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);

@@ -1,5 +1,6 @@
 package AppWeb.AppWeb.controller;
 
+import AppWeb.AppWeb.exceptionHandler.UsernameNotFoundException;
 import AppWeb.AppWeb.model.User;
 import AppWeb.AppWeb.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,24 +32,50 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model, HttpServletRequest request) {
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            // User is not registered
-            model.addAttribute("errorMessage", "You are not registered, please register");
+        try {
+            User user = userService.findByUsername(username);
+            if (user == null) {
+                // User is not registered
+                throw new UsernameNotFoundException("User not found with username: " + username);
+            } else if (!user.getPassword().equals(password)) {
+                // Invalid credentials
+                model.addAttribute("errorMessage", "Invalid credentials");
+                return "login";
+            } else {
+                // Successful login
+                HttpSession session = request.getSession();
+                session.setAttribute("loggedInUser", user); // Set the loggedInUser attribute in session
+                System.out.println("User logged in: " + user.getUsername()); // Add this line for logging
+                model.addAttribute("userId", user.getId()); // Pass user ID to dashboard
+                return "redirect:/dashboard";
+            }
+        } catch (UsernameNotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
             return "login";
-        } else if (!user.getPassword().equals(password)) {
-            // Invalid credentials
-            model.addAttribute("errorMessage", "Invalid credentials");
-            return "login";
-        } else {
-            // Successful login
-            HttpSession session = request.getSession();
-            session.setAttribute("loggedInUser", user); // Set the loggedInUser attribute in session
-            System.out.println("User logged in: " + user.getUsername()); // Add this line for logging
-            model.addAttribute("userId", user.getId()); // Pass user ID to dashboard
-            return "redirect:/dashboard";
         }
     }
+
+
+//    @PostMapping("/login")
+//    public String login(@RequestParam String username, @RequestParam String password, Model model, HttpServletRequest request) {
+//        User user = userService.findByUsername(username);
+//        if (user == null) {
+//            // User is not registered
+//            model.addAttribute("errorMessage", "You are not registered, please register");
+//            return "login";
+//        } else if (!user.getPassword().equals(password)) {
+//            // Invalid credentials
+//            model.addAttribute("errorMessage", "Invalid credentials");
+//            return "login";
+//        } else {
+//            // Successful login
+//            HttpSession session = request.getSession();
+//            session.setAttribute("loggedInUser", user); // Set the loggedInUser attribute in session
+//            System.out.println("User logged in: " + user.getUsername()); // Add this line for logging
+//            model.addAttribute("userId", user.getId()); // Pass user ID to dashboard
+//            return "redirect:/dashboard";
+//        }
+//    }
 
 
     @GetMapping("/register")

@@ -68,7 +68,7 @@
     <table>
         <thead>
         <tr>
-            <th>Subscription Type</th>
+            <th>Application Name</th>
             <th>Subscription Date</th>
             <th>Action</th>
         </tr>
@@ -76,14 +76,25 @@
         <tbody>
         <!-- Iterate over subscriptions -->
         <tr th:each="subscription : ${subscriptions}">
-            <td th:text="${subscription.subscriptionType}"></td>
+            <td th:text="${subscription.applicationName}"></td>
             <td th:text="${subscription.subscriptionDate}"></td>
             <td>
-                <!-- Unsubscribe button -->
                 <form action="/unsubscribe" method="post">
                     <input type="hidden" name="subscriptionId" th:value="${subscription.id}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
                     <button type="submit" class="unsubscribe-button">Unsubscribe</button>
                 </form>
+<!--                <form action="/unsubscribe" method="post">-->
+<!--                    <input type="hidden" name="subscriptionId" th:value="${subscription.id}">-->
+<!--                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">-->
+<!--                    <button type="submit" class="unsubscribe-button">Unsubscribe</button>-->
+<!--                </form>-->
+
+                <!--                &lt;!&ndash; Unsubscribe button &ndash;&gt;-->
+<!--                <form th:action="@{'/unsubscribe/' + ${subscription.id}}" method="post">-->
+<!--                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">-->
+<!--                    <button type="submit" class="unsubscribe-button">Unsubscribe</button>-->
+<!--                </form>-->
             </td>
         </tr>
         </tbody>
@@ -91,16 +102,11 @@
     <button class="close-button" onclick="closeUnsubscribePage()">Close</button>
 </div>
 <script>
-    // function closeUnsubscribePage() {
-    //     window.close();
-    // }
     // Function to close subscription container
     function closeUnsubscribePage() {
         // Close the subscription container
         document.getElementById('unsubscribe').style.display = 'none';
     }
-
 </script>
-
 </body>
 </html>

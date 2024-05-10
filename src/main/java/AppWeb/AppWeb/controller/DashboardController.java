@@ -79,9 +79,9 @@ public class DashboardController {
     public void sendEmailNotification(User user, List<Update> updates) throws MessagingException, jakarta.mail.MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom(String.valueOf(new InternetAddress("your_email@example.com")));
+        helper.setFrom(String.valueOf(new InternetAddress("appmanager@gmail.com")));
         helper.setTo(user.getEmail());
-        helper.setSubject("New Updates Available");
+        helper.setSubject("Successful login");
 
         // Process the email template
         Context context = new Context();

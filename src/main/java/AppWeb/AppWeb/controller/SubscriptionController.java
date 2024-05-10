@@ -1,33 +1,32 @@
 package AppWeb.AppWeb.controller;
 
+//import AppWeb.AppWeb.model.Application;
 import AppWeb.AppWeb.model.Subscription;
-import AppWeb.AppWeb.model.SubscriptionType;
 import AppWeb.AppWeb.model.User;
+import AppWeb.AppWeb.service.ApplicationService;
+import AppWeb.AppWeb.service.SubscriptionService;
 import AppWeb.AppWeb.service.UserService;
+import AppWeb.AppWeb.service.WindowsApplicationManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.ui.Model;
-import AppWeb.AppWeb.repository.SubscriptionRepository;
-import AppWeb.AppWeb.repository.UserRepository;
-import AppWeb.AppWeb.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class SubscriptionController {
 
     @Autowired
-    private UserRepository userRepository;
+    private ApplicationService applicationService;
 
-    @Autowired
-    private SubscriptionRepository subscriptionRepository;
     @Autowired
     private SubscriptionService subscriptionService;
 
@@ -35,89 +34,70 @@ public class SubscriptionController {
     private UserService userService;
 
     @GetMapping("/subscription.html")
-    public String getSubscriptionPage(Model model, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            // Handle case where user is not authenticated
-            System.out.println("User not authenticated"); // Add this line for logging
-            return "redirect:/login"; // Redirect to login page
-        }
-
-        // User is authenticated
-        model.addAttribute("loggedInUserId", loggedInUser.getId());
+    public String showSubscriptionForm(Model model) {
+        // Fetch the list of installed applications
+        List<String> installedApplications = WindowsApplicationManager.getInstalledApplications();
+        model.addAttribute("installedApplications", installedApplications);
         return "subscription";
     }
 
-    @GetMapping("/types")
-    public ResponseEntity<List<SubscriptionType>> getSubscriptionTypes() {
-        List<SubscriptionType> subscriptionTypes = Arrays.asList(SubscriptionType.values());
-        return ResponseEntity.ok(subscriptionTypes);
-    }
-
     @PostMapping("/subscription")
-    public String subscribeUser(@RequestParam("subscriptionType") String subscriptionType, Model model,
-                                HttpServletRequest request) {
-        // No need to check for authentication here
-
-        // Validate subscription type
-        SubscriptionType type = SubscriptionType.valueOf(subscriptionType);
-        if (type == null) {
-            // Handle invalid subscription type
-            model.addAttribute("errorMessage", "Invalid subscription type");
-            return "redirect:/dashboard";
-        }
-
-        // For demonstration purposes, let's assume the user is retrieved from the session
+    public String subscribeToUpdates(@RequestParam("application") String applicationName,
+                                     RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        // Get the current user from the session or any other mechanism
         User user = userService.getCurrentUser(request);
-        if (user == null) {
-            // Handle case where user is not found in session
-            model.addAttribute("errorMessage", "User not found in session");
-            return "redirect:/dashboard";
+
+        // Subscribe the user to updates for the selected application
+        boolean subscribed = subscriptionService.subscribeToUpdates(user, applicationName);
+
+        if (subscribed) {
+            // Add success message
+            redirectAttributes.addFlashAttribute("successMessage", "Subscribed successfully to updates for " + applicationName);
+        } else {
+            // Add error message
+            redirectAttributes.addFlashAttribute("errorMessage", "You are already subscribed to updates for " + applicationName);
         }
 
-        // Use the SubscriptionService to handle subscription
-        subscriptionService.subscribeUser(user, type);
-
-        // Return a success response
-        model.addAttribute("successMessage", "Subscribed successfully");
         return "redirect:/dashboard";
     }
 
 
     @GetMapping("/unsubscribe")
-    public String getUnsubscribePage(Model model, HttpSession session) {
-        User loggedInUser = (User) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            System.out.println("User not authenticated");
-            return "redirect:/login";
-        }
+    public String showUnsubscribeForm(Model model, HttpServletRequest request) {
+        // Get the current user from the session or any other mechanism
+        User user = userService.getCurrentUser(request);
 
-        // Retrieve subscriptions for the logged-in user
-        List<Subscription> subscriptions = subscriptionService.findByUser(loggedInUser);
-        model.addAttribute("subscriptions", subscriptions);
-        return "unsubscribe";
-    }
-
-
-    // Add this new endpoint for unsubscribing
-    @PostMapping("/unsubscribe")
-    public String unsubscribeUser(@RequestParam("subscriptionId") Long subscriptionId, Model model) {
-        Optional<Subscription> optionalSubscription = subscriptionRepository.findById(subscriptionId);
-        if (optionalSubscription.isPresent()) {
-            Subscription subscription = optionalSubscription.get();
-            User user = subscription.getUser();
-            subscriptionRepository.delete(subscription); // Delete the subscription
-
-            // Send email notification
-            subscriptionService.sendUnsubscribeEmailNotification(user);
-
-            // Redirect back to the subscription page with success message
-            model.addAttribute("successMessage", "Unsubscribed successfully");
-            return "redirect:/dashboard";
+        if (user == null) {
+            // Handle unauthenticated access
+            // For example, redirect to the login page
+            return "redirect:/logout";
         } else {
-            // Subscription not found, handle this case
-            model.addAttribute("errorMessage", "Subscription not found");
-            return "redirect:/unsubscribe";
+            // Fetch the list of subscribed applications for the logged-in user
+            List<Subscription> subscriptions = subscriptionService.getUserSubscriptions(user);
+            model.addAttribute("subscriptions", subscriptions);
+            return "unsubscribe";
         }
     }
+
+    @PostMapping("/unsubscribe")
+    public String unsubscribe(@RequestParam("subscriptionId") Long subscriptionId, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        // Get the current user from the session or any other mechanism
+        User user = userService.getCurrentUser(request);
+
+        if (user == null) {
+            // Handle unauthenticated access
+            // For example, redirect to the login page
+            return "redirect:/logout";
+        } else {
+            // Unsubscribe from updates
+            subscriptionService.unsubscribeFromUpdates(user, subscriptionId);
+
+            // Add success message
+            redirectAttributes.addFlashAttribute("successMessage", "Unsubscribed successfully");
+
+            return "redirect:/dashboard"; // Redirect to subscription page or any other page as needed
+        }
+    }
+
+
 }

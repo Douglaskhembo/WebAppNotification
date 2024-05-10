@@ -21,11 +21,17 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String applicationName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    private SubscriptionType subscriptionType;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private Application application;
+
+//    @Enumerated(EnumType.STRING)
+//    private SubscriptionType subscriptionType;
 
     @Column(updatable = false)
     private LocalDateTime subscriptionDate = LocalDateTime.now();

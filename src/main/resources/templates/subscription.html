@@ -68,14 +68,12 @@
     <h2>Choose Subscription</h2>
 
     <form id="subscriptionForm" action="/subscription" method="post">
-        <label for="subscriptionType">Select Subscription Type:</label>
-        <select id="subscriptionType" name="subscriptionType">
+        <label for="application">Select Application:</label>
+        <select id="application" name="application">
             <option value="">Select</option>
-            <option value="X">X</option>
-            <option value="WHATSAPP">WhatsApp</option>
-            <option value="INSTAGRAM">Instagram</option>
-            <option value="LINKEDIN">LinkedIn</option>
-            <option value="MICROSOFT_TEAMS">Microsoft Teams</option>
+            <!-- Loop through installed applications -->
+            <option th:each="app : ${installedApplications}"
+                    th:value="${app}" th:text="${app}"></option>
         </select>
         <br>
         <input type="submit" value="Subscribe">
